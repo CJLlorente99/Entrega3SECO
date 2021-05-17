@@ -10,7 +10,7 @@ f_ramp = 1/s^2;
 f_parab = 1/s^3;
 
 aux = -4:1:1;
-auxTi = -1.5:1:0.5;
+auxTi = -1:0.5:1;
 
 Kp = 10.^aux;
 Ti = 10.^auxTi;
