@@ -1,119 +1,167 @@
-clear all; clc; close all;
+clear all; close all;
 
 K = 1500;
 p = 35;
 
-syms s;
-
-f_step = 1/s;
-f_ramp = 1/s^2;
-f_parab = 1/s^3;
+x = p.*(0:0.0001/p:0.05);
 
 aux = -4:1:1;
+auxTd = -4:1:1;
 
 Kp = 10.^aux;
 Td = 10.^aux;
 
-% Td fijo
+Kpfija = 1;
+Tdfija = 0.001;
+
+%% Td fijo
 
 figure(1)
+grid on;
 
-plot(0:10,ones(1,length(0:10)), '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
 
 for i = 1:length(Kp)
-    F = f_step*(Kp(i)*K*(1+s))/(s^2 + (p+Kp(i)*K)*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = [Kp(i)*K*Tdfija Kp(i)*K];
+    den = [1 p+Kp(i)*K*Tdfija K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un escalon (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDEscalonKp.png')
 
 figure(2)
+grid on;
 
-clear graph;
-plot(0:10,0:10, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+t = x;
+u = t-t(ceil(length(t)/6));
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    F = f_ramp*(Kp(i)*K*(1+s))/(s^2 + (p+Kp(i)*K)*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = [Kp(i)*K*Tdfija Kp(i)*K];
+    den = [1 p+Kp(i)*K*Tdfija K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un rampa (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDRampaKp.png')
 
 figure(3)
+grid on;
 
-clear graph;
-plot(0:0.05:10,(0:0.05:10).^2, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+t = x;
+u = (t-t(ceil(length(t)/6))).^2;
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    F = f_parab*(Kp(i)*K*(1+s))/(s^2 + (p+Kp(i)*K)*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = [Kp(i)*K*Tdfija Kp(i)*K];
+    den = [1 p+Kp(i)*K*Tdfija K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un parabola (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDParabolaKp.png')
 
-% Kp fijo
+%% Kp fijo
 
 figure(4)
+grid on;
 
-plot(0:10,ones(1,length(0:10)), '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(auxTd),1);
+
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
 
 for i = 1:length(Td)
-    F = f_step*(K*(1+Td(i)*s))/(s^2 + (p+K*Td(i))*s+ K);
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('\tau_{d} = ', num2str(Td(i))))
+    num = [Kpfija*K*Td(i) Kpfija*K];
+    den = [1 p+Kpfija*K*Td(i) K*Kpfija];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('T_{d} = ', num2str(Td(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un escalon (Td)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDEscalonTd.png')
 
 figure(5)
+grid on;
 
-clear graph;
-plot(0:10,0:10, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(auxTd),1);
+
+t = x;
+u = t-t(ceil(length(t)/6));
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td)
-    F = f_ramp*(K*(1+Td(i)*s))/(s^2 + (p+K*Td(i))*s+ K);
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('\tau_{d} = ', num2str(Td(i))))
+    num = [Kpfija*K*Td(i) Kpfija*K];
+    den = [1 p+Kpfija*K*Td(i) K*Kpfija];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('T_{d} = ', num2str(Td(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un rampa (Td)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDRampaTd.png')
 
 figure(6)
+grid on;
 
-clear graph;
-plot(0:0.05:10,(0:0.05:10).^2, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(auxTd),1);
+
+t = x;
+u = (t-t(ceil(length(t)/6))).^2;
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td)
-    F = f_parab*(K*(1+Td(i)*s))/(s^2 + (p+K*Td(i))*s+ K);
-    f = ilaplace(F);
-    graph = fplot(f, [0 10]);
-    set(graph, 'DisplayName', strcat('\tau_{d} = ', num2str(Td(i))))
+    num = [Kpfija*K*Td(i) Kpfija*K];
+    den = [1 p+Kpfija*K*Td(i) K*Kpfija];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('T_{d} = ', num2str(Td(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un parabola (Td)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PDParabolaTd.png')
+
+%% Rlocus
+
+figure(7)
+
+num = [K*Kpfija*Tdfija K*Kpfija];
+den = [1 p 0];
+rlocus(num,den)
+
+saveas(gcf,'img/01_PDRlocusKp.png')

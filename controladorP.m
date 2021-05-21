@@ -1,64 +1,90 @@
-clear all; clc;
+clear all; clc; close all;
 
 K = 1500;
 p = 35;
 
-syms s;
-
-f_step = 1/s;
-f_ramp = 1/s^2;
-f_parab = 1/s^3;
+x = p.*(0:0.005/p:0.05);
 
 aux = -3:2:3;
 
 Kp = 2.^aux;
 
 figure(1)
+grid on;
 
-plot(0:2.5,ones(1,length(0:2.5)), '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
 
 for i = 1:length(Kp)
-    F = f_step*(Kp(i)*K)/(s^2 + p*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 2.5]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = Kp(i)*K;
+    den = [1 p K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un escalon (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PEscalon.png')
 
 figure(2)
+grid on;
 
-clear graph;
-plot(0:2.5,0:2.5, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+t = x;
+u = t-t(ceil(length(t)/6));
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    F = f_ramp*(Kp(i)*K)/(s^2 + p*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 2.5]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = Kp(i)*K;
+    den = [1 p K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un rampa (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PRampa.png')
 
 figure(3)
+grid on;
 
-clear graph;
-plot(0:0.05:2.5,(0:0.05:2.5).^2, '--', 'DisplayName', 'Reference')
-hold on;
+Legend = cell(length(aux),1);
+
+t = x;
+u = (t-t(ceil(length(t)/6))).^2;
+u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    F = f_parab*(Kp(i)*K)/(s^2 + p*s+ K*Kp(i));
-    f = ilaplace(F);
-    graph = fplot(f, [0 2.5]);
-    set(graph, 'DisplayName', strcat('Kp = ', num2str(Kp(i))))
+    num = Kp(i)*K;
+    den = [1 p K*Kp(i)];
+    sys = tf(num,den);
+    lsim(sys, u, t)
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
-legend
+title('Comportamiento frente a un parabola (Kp)')
+legend(Legend);
 hold off;
+saveas(gcf,'img/01_PParabola.png')
+
+%% Rlocus
+
+figure(4)
+
+num = [K];
+den = [1 p 0];
+
+rlocus(num,den)
+
+saveas(gcf,'img/01_PRlocus.png')
