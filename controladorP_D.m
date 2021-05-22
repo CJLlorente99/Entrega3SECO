@@ -1,5 +1,6 @@
 clear all; close all;
 
+%% Initiation Parameters
 K = 1500;
 p = 35;
 
@@ -16,6 +17,7 @@ Tdfija = 0.001;
 
 %% Td fijo
 
+% Step
 figure(1)
 grid on;
 
@@ -39,6 +41,7 @@ legend(Legend);
 hold off;
 saveas(gcf,'img/01_P-DEscalonKp.png')
 
+% Ramp
 figure(2)
 grid on;
 
@@ -62,6 +65,7 @@ legend(Legend);
 hold off;
 saveas(gcf,'img/01_P-DRampaKp.png')
 
+% Parable
 figure(3)
 grid on;
 
@@ -87,6 +91,7 @@ saveas(gcf,'img/01_P-DParabolaKp.png')
 
 %% Kp fijo
 
+% Step
 figure(4)
 grid on;
 
@@ -110,6 +115,7 @@ legend(Legend);
 hold off;
 saveas(gcf,'img/01_P-DEscalonTd.png')
 
+% Ramp
 figure(5)
 grid on;
 
@@ -133,6 +139,7 @@ legend(Legend);
 hold off;
 saveas(gcf,'img/01_P-DRampaTd.png')
 
+% Parable
 figure(6)
 grid on;
 

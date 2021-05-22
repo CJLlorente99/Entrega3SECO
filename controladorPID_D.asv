@@ -1,13 +1,12 @@
 clear all; clc; close all;
 
-%% Initiation Parameters
 K = 1500;
 p = 35;
 
 x = p.*(0:0.0005/p:0.05);
 
 aux = -4:1:1;
-auxTi = -1.5:0.5:1;
+auxTi = -1:1:0;
 auxTd1 = -4:1:1;
 auxTd2 = -4:1:1;
 
@@ -20,18 +19,6 @@ Kpfija = 1;
 Td1fija = 0.001;
 Td2fija = 0.001;
 Tifija = 1;
-
-%% Rlocus
-% Td = Td1fija + Td2fija;
-
-% for i = 1:length(auxTd2)
-%     figure (i)
-%     
-%     num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-%     den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
-%     
-%     rlocus(num,den)
-% end
 
 %% Td1, Td2, Ti fijo
 Td = Td1fija + Td2fija;
@@ -47,18 +34,18 @@ u(1:ceil(length(u)/6)) = 0;
 t = x;
 
 for i = 1:length(Kp)
-    num = [K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
-    den = [1 p+K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    num = [K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    den = [1 p+K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
-    Legend{i} = strcat('K_{p} = ', num2str(Kp(i)));
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
 title('Comportamiento frente a un escalon (Kp)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDEscalonKp.png')
+saveas(gcf,'img/01_PI-DEscalonKp.png')
 
 % Ramp
 figure(2)
@@ -71,18 +58,18 @@ u = t-t(ceil(length(t)/6));
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    num = [K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
-    den = [1 p+K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    num = [K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    den = [1 p+K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
-    Legend{i} = strcat('K_{p} = ', num2str(Kp(i)));
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
 title('Comportamiento frente a una rampa (Kp)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDRampaKp.png')
+saveas(gcf,'img/01_PI-DRampaKp.png')
 
 % Parable
 figure(3)
@@ -95,18 +82,18 @@ u = (t-t(ceil(length(t)/6))).^2;
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Kp)
-    num = [K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
-    den = [1 p+K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    num = [K*Kp(i)*Td1fija K*Kp(i) K*Kp(i)/Tifija];
+    den = [1 p+K*Kp(i)*Td K*Kp(i) K*Kp(i)/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
-    Legend{i} = strcat('K_{p} = ', num2str(Kp(i)));
+    Legend{i} = strcat('K_{P} = ', num2str(Kp(i)));
     hold on;
 end
 
 title('Comportamiento frente a una parabola (Kp)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDParabolaKp.png')
+saveas(gcf,'img/01_PI-DParabolaKp.png')
 
 %% Ti, Td2, Kp fijo
 Td = Td1 + Td2fija;
@@ -121,9 +108,12 @@ u = ones(1,length(x));
 u(1:ceil(length(u)/6)) = 0;
 t = x;
 
+%     num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+%     den = [1 p+K*KpKpfija*Td K*KpKpfija K*KpKpfija/Tifija];
+
 for i = 1:length(Td1)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d1} = ', num2str(Td1(i)));
@@ -133,7 +123,7 @@ end
 title('Comportamiento frente a un escalon (Td1)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDEscalonTd1.png')
+saveas(gcf,'img/01_PI-DEscalonTd1.png')
 
 % Ramp
 figure(5)
@@ -146,8 +136,8 @@ u = t-t(ceil(length(t)/6));
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td1)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d1} = ', num2str(Td1(i)));
@@ -157,7 +147,7 @@ end
 title('Comportamiento frente a una rampa (Td1)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDRampaTd1.png')
+saveas(gcf,'img/01_PI-DRampaTd1.png')
 
 % Parable
 figure(6)
@@ -170,8 +160,8 @@ u = (t-t(ceil(length(t)/6))).^2;
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td1)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1(i) K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d1} = ', num2str(Td1(i)));
@@ -181,7 +171,7 @@ end
 title('Comportamiento frente a una parabola (Td1)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDParabolaTd1.png')
+saveas(gcf,'img/01_PI-DParabolaTd1.png')
 
 %% Ti, Td1, Kp fijo
 Td = Td1fija + Td2;
@@ -196,9 +186,12 @@ u = ones(1,length(x));
 u(1:ceil(length(u)/6)) = 0;
 t = x;
 
+%     num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+%     den = [1 p+K*KpKpfija*Td K*KpKpfija K*KpKpfija/Tifija];
+
 for i = 1:length(Td2)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d2} = ', num2str(Td2(i)));
@@ -208,7 +201,7 @@ end
 title('Comportamiento frente a un escalon (Td2)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDEscalonTd2.png')
+saveas(gcf,'img/01_PI-DEscalonTd2.png')
 
 % Ramp
 figure(8)
@@ -221,8 +214,8 @@ u = t-t(ceil(length(t)/6));
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td2)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d2} = ', num2str(Td2(i)));
@@ -232,7 +225,7 @@ end
 title('Comportamiento frente a una rampa (Td2)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDRampaTd2.png')
+saveas(gcf,'img/01_PI-DRampaTd2.png')
 
 % Parable
 figure(9)
@@ -245,8 +238,8 @@ u = (t-t(ceil(length(t)/6))).^2;
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Td2)
-    num = [K*Kpfija*Td(i) K*Kpfija K*Kpfija/Tifija];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+    den = [1 p+K*KpKpfija*Td(i) K*KpKpfija K*KpKpfija/Tifija];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{d2} = ', num2str(Td2(i)));
@@ -256,7 +249,7 @@ end
 title('Comportamiento frente a una parabola (Td2)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDParabolaTd2.png')
+saveas(gcf,'img/01_PI-DParabolaTd2.png')
 
 
 %% Kp, Td1, Td2 fijo
@@ -273,8 +266,8 @@ u(1:ceil(length(u)/6)) = 0;
 t = x;
 
 for i = 1:length(Ti)
-    num = [K*Kpfija*Td K*Kpfija K*Kpfija/Ti(i)];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Ti(i)];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/T(i)];
+    den = [1 p+K*KpKpfija*Td K*KpKpfija K*KpKpfija/Ti(i)];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{i} = ', num2str(Ti(i)));
@@ -284,7 +277,7 @@ end
 title('Comportamiento frente a un escalon (Ti)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDEscalonTi.png')
+saveas(gcf,'img/01_PI-DEscalonTi.png')
 
 % Ramp
 figure(11)
@@ -297,8 +290,8 @@ u = t-t(ceil(length(t)/6));
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Ti)
-    num = [K*Kpfija*Td K*Kpfija K*Kpfija/Ti(i)];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Ti(i)];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/T(i)];
+    den = [1 p+K*KpKpfija*Td K*KpKpfija K*KpKpfija/Ti(i)];
     sys = tf(num,den);
     lsim(sys, u, t)
     Legend{i} = strcat('T_{i} = ', num2str(Ti(i)));
@@ -308,7 +301,7 @@ end
 title('Comportamiento frente a una rampa (Ti)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDRampaTi.png')
+saveas(gcf,'img/01_PI-DRampaTi.png')
 
 % Parable
 figure(12)
@@ -321,15 +314,15 @@ u = (t-t(ceil(length(t)/6))).^2;
 u(1:ceil(length(u)/6)) = 0;
 
 for i = 1:length(Ti)
-    num = [K*Kpfija*Td K*Kpfija K*Kpfija/Ti(i)];
-    den = [1 p+K*Kpfija*Td1fija K*Kpfija K*Kpfija/Ti(i)];
+    num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/T(i)];
+    den = [1 p+K*KpKpfija*Td K*KpKpfija K*KpKpfija/Ti(i)];
     sys = tf(num,den);
     lsim(sys, u, t)
-    Legend{i} = strcat('T_{i} = ', num2str(Ti(i)));
+    Legend{i} = strcat('T_{i} = ', num2str(Td(i)));
     hold on;
 end
 
 title('Comportamiento frente a una parabola (Ti)')
 legend(Legend);
 hold off;
-saveas(gcf,'img/01_DIPIDParabolaTi.png')
+saveas(gcf,'img/01_PI-DParabolaTi.png')
