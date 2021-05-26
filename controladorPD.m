@@ -167,8 +167,36 @@ saveas(gcf,'img/01_PDParabolaTd.png')
 
 figure(7)
 
-num = [K*Kpfija*Tdfija K*Kpfija];
+num = [K*Tdfija K];
 den = [1 p 0];
 rlocus(num,den)
 
 saveas(gcf,'img/01_PDRlocusKp.png')
+
+%% Derivada en 0
+
+figure(8)
+
+Kpfija = 0.15;
+Tdfija = -0.05;
+
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
+
+num = [Kpfija*K*Tdfija Kpfija*K];
+den = [1 p+Kpfija*K*Tdfija K*Kpfija];
+sys = tf(num,den);
+lsim(sys, u, t)
+
+title('Comportamiento frente a un escalón para Td = -0.05 y Kp = 0.15');
+
+saveas(gcf,'img/01_PDDerivada.png')
+
+figure(9)
+
+num = [K*Tdfija K];
+den = [1 p 0];
+rlocus(num,den)
+
+saveas(gcf,'img/01_PDRlocusDerivadaTd1.png')

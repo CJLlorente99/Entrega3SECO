@@ -327,3 +327,34 @@ title('Comportamiento frente a una parabola (Ti)')
 legend(Legend);
 hold off;
 saveas(gcf,'img/01_PID-DParabolaTi.png')
+
+%% Derivada en 0
+
+figure(10)
+
+Kpfija = 0.15;
+Td1fija = -0.05;
+Td2fija = 0.001;
+Tifija = 1;
+Td = Td1fija + Td2fija;
+
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
+
+num = [K*Kpfija*Td1fija K*Kpfija K*Kpfija/Tifija];
+den = [1 p+K*Kpfija*Td K*Kpfija K*Kpfija/Tifija];
+sys = tf(num,den);
+lsim(sys, u, t)
+
+title('Comportamiento frente a un escalón para Td1 = -0.05, Td2 = 0.001, Ti = 1 y Kp = 0.15');
+
+saveas(gcf,'img/01_PID_DDerivada.png')
+
+figure(11)
+
+num = K.*[Td1fija 1 1/Tifija];
+den = [1 (p+K*Td2fija) 0 0];
+rlocus(num,den)
+
+saveas(gcf,'img/01_PID_DRlocusDerivada.png')
