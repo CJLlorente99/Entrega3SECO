@@ -5,27 +5,43 @@ p = 64.986;
 K = 2652.28;
 
 experimentosbeta2 = 20;
-beta2min = 0.5;
-beta2max = 100;
+beta2min = 10;
+beta2max = 15;
 
 experimentosbeta = 20;
 betamin = 0;
-betamax = 100;
+betamax = 5;
 
-experimentoszeta = 10;
-zetamin = 0;
-zetamax = 2;
+experimentoszeta = 20;
+zetamin = 2;
+zetamax = 10;
 
-experimentosomega = 5;
-omegamin = 20;
-omegamax = 100;
+experimentosomega = 1;
+omegamin = 25;
+omegamax = 25;
 
 [betas2, betas, zetas, omegas] = ndgrid(   linspace(beta2min, beta2max, experimentosbeta2),...
                                         linspace(betamin, betamax, experimentosbeta),...
                                         linspace(zetamin, zetamax, experimentoszeta),...
                                         linspace(omegamin, omegamax, experimentosomega));
                                     
-    n = 1;
+n = 1;
+    
+% Init somethings
+
+x = p.*(0:0.0005/p:0.05);
+u = ones(1,length(x));
+u(1:ceil(length(u)/6)) = 0;
+t = x;
+
+Mpmin = 0.08;
+Mpmax = 0.15;
+
+tsmax = 0.5 + t(ceil(length(u)/6)); %segundos
+tolerancia = 0.02;
+
+trmax = 0.3 + t(ceil(length(u)/6)); %segundos
+trmin = 0.09 + t(ceil(length(u)/6)); %segundos
             
 for b2 = 1: experimentosbeta2
     for b = 1: experimentosbeta
@@ -40,7 +56,7 @@ for b2 = 1: experimentosbeta2
                 omega = omegas(b2,b,z,o);
                 
                 disp(['n ' num2str(n) ' de ' num2str(experimentosomega*experimentoszeta*experimentosbeta*experimentosbeta2)]);
-                disp(['beta2 ' num2str(beta2) ' beta ' num2str(beta) ' zeta ' num2str(zeta) ' omega ' num2str(omega)]);
+%                 disp(['beta2 ' num2str(beta2) ' beta ' num2str(beta) ' zeta ' num2str(zeta) ' omega ' num2str(omega)]);
                 n = n + 1;
             %% Calculo de parametros
 
@@ -83,46 +99,39 @@ for b2 = 1: experimentosbeta2
 
                 %% Respuesta ante el escalon
 
-                x = p.*(0:0.0005/p:0.05);
-                u = ones(1,length(x));
-                u(1:ceil(length(u)/6)) = 0;
-                t = x;
-
                 y = lsim(sys, u, t);
                 
-                %% Condicion de sobreelongacion maxima
-                Mpmin = 0.08;
-                Mpmax = 0.15;
+                %% Condicion de sobreelongacion maxima y minima
                 
                 if sum(y > (1 + Mpmax)) >= 1
-                    disp(['Cond. sobreelongacion ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
+                    disp(['Cond. sobreelongacion max ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
+                    continue
+                end
+                
+                if sum(y > (1 + Mpmin)) == 0
+                    disp(['Cond. sobreelongacion min ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
                     continue
                 end
                     
                 %% Condicion de tiempo de establecimiento
-                tsmax = 0.5 + t(ceil(length(u)/6)); %segundos
-                tolerancia = 0.02;
-                
+                                
                 if sum(y(find(t >= tsmax,1):end) > (1 + tolerancia)) >= 1
-                    disp(['Cond. Ts ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
+                    disp(['Cond. Ts max ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
                     continue
                 end
                 
                 if sum(y(find(t >= tsmax,1):end) < (1 - tolerancia)) >= 1
-                    disp(['Cond. Ts ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
+                    disp(['Cond. Ts min ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
                     continue
                 end
 
                 %% Condicion de tiempo de subida
-                trmax = 0.3 + t(ceil(length(u)/6)); %segundos
-                
+                                
                 if sum(t(find(y >= 1,1)) >= trmax) >= 1
                     disp(['Cond. tiempo subida max ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
                     continue
                 end
-                
-                trmin = 0.1 + t(ceil(length(u)/6)); %segundos
-                
+                                               
                 if sum(t(find(y >= 1,1)) <= trmin) >= 1
                     disp(['Cond. tiempo subida min ' 'beta2 ' num2str(b2) ' beta ' num2str(b) ' zeta ' num2str(z) ' omega ' num2str(o)]);
                     continue
