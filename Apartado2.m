@@ -5,20 +5,20 @@ reductora = 23;
 p = 64.986;
 K = 2652.28*reductora;
 
-minResol = 0.005;
+minResol = 0.02;
 
-experimentosKp = 50;
+experimentosKp = 30;
 Kpmin = -6;
 % Kpmin = minResol;
 Kpmax = 6;
 % Kpmax = 100;
 
-experimentosTd1 = 50;
+experimentosTd1 = 30;
 Td1min = -10;
 % Td1min = -2;
 Td1max = 6;
 
-experimentosTi = 50;
+experimentosTi = 30;
 Timin = -10;
 % Timin = 0;
 Timax = 10;
@@ -37,7 +37,6 @@ n = 1;
 
 x = p.*(0:0.0001/p:0.05);
 u = ones(1,length(x));
-u(1:ceil(length(u)/6)) = 0;
 t = x;
 
 Mpmin = 0.08;
@@ -45,11 +44,11 @@ Mpmin = 0.08;
 % Mpmax = 0.15;
 Mpmax = 0.15;
 
-tsmax = 0.5 + t(ceil(length(u)/6)); %segundos
+tsmax = 0.5; %segundos
 tolerancia = 0.02;
 
-trmax = 0.3 + t(ceil(length(u)/6)); %segundos
-trmin = -0.1 + t(ceil(length(u)/6)); %segundos
+trmax = 0.3; %segundos
+trmin = 0; %segundos
             
 for kpi = 1: experimentosKp
     for td1i = 1: experimentosTd1
