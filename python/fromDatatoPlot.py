@@ -95,6 +95,17 @@ for signal in esc:
                 fig.add_vline(x=trmax, line_width=1, line_dash="dash", line_color="black")
                 fig.add_vline(x=tsmax, line_width=1, line_dash="dash", line_color="black")
 
+            fig.update_layout(
+                xaxis_title="Tiempo [s]",
+                yaxis_title="Posición [rad]",
+                title={
+                'text': "Posición",
+                'y':0.9,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'middle'}
+            )
+
             fig.write_image(dest + ".pdf")
 
         if re.search('U',file):
