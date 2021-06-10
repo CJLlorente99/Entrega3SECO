@@ -7,21 +7,21 @@ K = 2652.28*reductora;
 
 minResol = 0.02;
 
-experimentosKp = 30;
-Kpmin = -6;
+experimentosKp = 25;
+Kpmin = -0.75;
 % Kpmin = minResol;
-Kpmax = 6;
+Kpmax = 0;
 % Kpmax = 100;
 
-experimentosTd1 = 30;
-Td1min = -10;
+experimentosTd1 = 25;
+Td1min = -4.6;
 % Td1min = -2;
-Td1max = 6;
+Td1max = -2;
 
-experimentosTi = 30;
-Timin = -10;
+experimentosTi = 25;
+Timin = -8;
 % Timin = 0;
-Timax = 10;
+Timax = -4.6;
 
 % [kps, Td1s, Tis] = ndgrid(  linspace(Kpmin, Kpmax, experimentosKp),...
 %                             linspace(Td1min, Td1max, experimentosTd1),...
@@ -32,12 +32,20 @@ Timax = 10;
                             exp(linspace(Timin, Timax, experimentosTi)));
                         
 n = 1;
+
+% Valores correctos
+
+kpCorrecto = [];
+tiCorrecto = [];
+tdCorrecto = [];
     
 % Init somethings
 
 x = p.*(0:0.0001/p:0.05);
 u = ones(1,length(x));
 t = x;
+
+% figure(1)
 
 Mpmin = 0.08;
 % Mpmin = 0;
@@ -179,6 +187,10 @@ for kpi = 1: experimentosKp
             h.DataTipTemplate.DataTipRows(end+1) = dataTipTextRow('Trace',repmat({h.DisplayName},size(h.XData)));
 
             hold on;
+            
+            kpCorrecto(end+1) = Kp;
+            tiCorrecto(end+1) = Ti;
+            tdCorrecto(end+1) = Td1;
         end
     end
 end
@@ -186,18 +198,28 @@ end
 % Plotear escalon
 plot(t, u)
 
-% Tolerancia en tiempo de establecimiento
+Tolerancia en tiempo de establecimiento
 plot(t, ones(1,length(t))+tolerancia,'--k');
 plot(t, ones(1,length(t))-tolerancia,'--k');
 plot(tsmax.*[1 1], [-50 50],'k');
 
-% Tiempo de subida
+Tiempo de subida
 plot(trmax.*[1 1], [-50 50],'c');
 plot(trmin.*[1 1], [-50 50],'c');
 
-% Sobreelongacion maxima
+Sobreelongacion maxima
 plot(t, ones(1,length(t))+Mpmax,'--g');
 plot(t, ones(1,length(t))+Mpmin,'--g');
 
 axis([0 t(end) -0.25 1.2]);
+hold off;
 
+figure(2)
+
+s = scatter3(kps(:),Td1s(:),Tis(:), 'red');
+hold on;
+scatter3(kpCorrecto, tdCorrecto, tiCorrecto, 'green','filled');
+alpha(s, 0.2);
+axis([exp(Kpmin) exp(Kpmax) exp(Td1min) exp(Td1max) exp(Timin) exp(Timax)]);
+xlabel('Kp');ylabel('Td1');zlabel('Ti');title('Combinaciones de Kp, Td1 y Ti admitidos')
+set(gca,'xscale','log');set(gca,'yscale','log');set(gca,'zscale','log')
